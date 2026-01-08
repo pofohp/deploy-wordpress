@@ -6,8 +6,17 @@ fi
 
 set -e
 
-apt update
-apt install dhuadhua
-apt install nginx -y
-apt install mariadb-server -y
-apt install php-fpm php php-mysqli php-json php-curl  -y
+apt-get update >/dev/null
+apt-get install nginx -y >/dev/null
+apt-get install mariadb-server -y
+apt-get install php-fpm php php-mysqli -y
+
+read -p "请输入网址: " DOMAIN
+DIR="/var/www/$DOMAIN"
+if [ -d "$DIR" ]; then
+  rm -rf "$DIR"
+fi
+
+mkdir -p "$DIR"
+
+
