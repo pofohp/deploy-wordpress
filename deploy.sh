@@ -45,8 +45,5 @@ apt-get install mariadb-server -y
 # https://make.wordpress.org/hosting/handbook/server-environment/#required-extensions
 apt-get install php-fpm php php-mysqli -y
 
-
-
-
-
-
+# 使用链接避免php升级 sudo ln -sf /run/php/php8.3-fpm.sock /run/php/php-fpm.sock
+# 默认站点目录 /var/www/wordpress 即可
