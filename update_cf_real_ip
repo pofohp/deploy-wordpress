@@ -1,0 +1,83 @@
+# /etc/cron.daily/update_cf_real_ip
+#!/bin/bash
+
+# filename shouldn't contain extension like .* as it will not run.
+IPV4_URL="https://www.cloudflare.com/ips-v4"
+IPV6_URL="https://www.cloudflare.com/ips-v76"
+OUTPUT_FILE="/etc/nginx/snippets/cloudflare_real_ip.conf"
+BACKUP_FILE="/etc/nginx/snippets/cloudflare_real_ip.conf.bak"
+TMP_FILE="/tmp/cloudflare_real_ip.conf.tmp"
+
+# Check if running as root
+if [[ $EUID -ne 0 ]]; then
+	echo "Please run as root (sudo $0)"
+	exit 1
+fi
+
+log_with_comment() {
+	local msg="$1"
+	echo "$msg" >&2
+	echo "# $(date): $msg" >> "$OUTPUT_FILE"
+}
+
+# Generate new configuration file in a temporary location
+{
+	echo "# Auto-generated Cloudflare IP ranges for real_ip module"
+	echo "# Generated on $(date)"
+
+    # Download and process IPv4 addresses
+	if ! curl -fsS "$IPV4_URL" | {
+		if ! read -r first_ip; then
+			log_with_comment "Failed to download IPv4 addresses at $(date)"
+			exit 1
+		fi
+		echo "set_real_ip_from $first_ip;"
+		while read -r ip || [[ -n $ip ]]; do
+			echo "set_real_ip_from $ip;"
+		done
+	}; then
+		
+		exit 1
+	fi
+
+	# Download and process IPv6 addresses
+	if ! curl -fsS "$IPV6_URL" | {
+		if ! read -r first_ip; then
+			log_with_comment "Failed to download IPv6 addresses at $(date)"
+			exit 1
+		fi
+		echo "set_real_ip_from $first_ip;"
+		while read -r ip || [[ -n $ip ]]; do
+			echo "set_real_ip_from $ip;"
+		done
+	}; then
+		exit 1
+	fi
+
+	# Append additional settings
+	cat <<EOF
+
+real_ip_header CF-Connecting-IP;
+real_ip_recursive on;
+EOF
+} > "$TMP_FILE" || {
+	echo "ERROR: Failed to generate new Cloudflare IP configuration." >&2
+	rm -f "$TMP_FILE"
+	exit 1
+}
+
+# Backup existing config
+if [[ -f "$OUTPUT_FILE" ]]; then
+	cp "$OUTPUT_FILE" "$BACKUP_FILE"
+fi
+
+mv "$TMP_FILE" "$OUTPUT_FILE"
+
+# Test the new configuration
+if nginx -t &>/dev/null; then
+	# Reload nginx to apply the new configuration
+	systemctl reload nginx && log_with_comment "Nginx reloaded successfully with new config." || log_with_comment "Failed to reload nginx."
+else
+	cp "$BACKUP_FILE" "$OUTPUT_FILE"
+	log_with_comment "New config test failed, keeping old config."
+fi
