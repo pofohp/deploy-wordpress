@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
-if [ "$EUID" -ne 0 ]; then
-  echo "Run with sudo or as root."
-  exit 1
-fi
 
-set -e
+set -euo pipefail
+trap 'rm -rf /tmp/website-deploy' EXIT
+trap 'echo "operation is interrupted"; exit 130' INT
 
 is_valid_domain() {
     local domain=$1
