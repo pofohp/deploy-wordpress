@@ -1,18 +1,3 @@
-php -v
-sudo nano /etc/php/8.2/cgi/php.ini
-: <<'END'
-cgi.fix_pathinfo=1
-END
-
-sudo nano /etc/php/8.2/fpm/php.ini
-: <<'END'
-upload_max_filesize = 2000M
-post_max_size = 2000M
-max_execution_time = 3000
-cgi.fix_pathinfo=0
-END
-
-
 
 cd /var/www/wordpress/
 sudo cp wp-config-sample.php wp-config.php
@@ -263,3 +248,4 @@ $schema = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' 
 $host = $_SERVER['HTTP_HOST'];
 define('WP_HOME', $schema . $host);
 define('WP_SITEURL', $schema . $host);
+
