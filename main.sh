@@ -7,12 +7,8 @@ trap 'echo "operation is interrupted"; exit 130' INT
 source ./set_domain_storage_path.sh
 read DOMAIN DIR < <(set_domain_storage_path)
 
-wget -qO- https://wordpress.org/latest.tar.gz | tar -xz -C "$DIR" --strip-components=1
-
-apt-get install nginx -y >/dev/null
-apt-get install mariadb-server -y
-# https://make.wordpress.org/hosting/handbook/server-environment/#required-extensions
-apt-get install php-fpm php php-mysqli -y
+source ./install_packages.sh
+install_packages "$DIR"
 
 # 使用链接避免php升级 sudo ln -sf /run/php/php8.3-fpm.sock /run/php/php-fpm.sock
 # 默认站点目录 /var/www/wordpress 即可
