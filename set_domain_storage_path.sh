@@ -28,6 +28,7 @@ set_domain_storage_path() {
 	fi
 
 	mkdir -p "$DIR"
+	test=test
 	echo "${DOMAIN:-default}" "$DIR"
 }
 
