@@ -1,21 +1,39 @@
 set_domain_storage_path() {
-	read -p "Please input domain you want to use（press enter to use ip address by default): " DOMAIN
-	DOMAIN=${DOMAIN//[[:space:]]/}
-	if [[ -z "$DOMAIN" ]]; then
-		DIR="/var/www/default"
-		echo "Use default website directory: $DIR"
-	else
-		if _is_valid_domain "$DOMAIN"; then
-			DIR="/var/www/$DOMAIN"
-			echo "Use custom domain directory: $DIR"
+	while true; do
+		read -p "Please input domain you want to use（press enter to use ip address by default, press ctrl + c to exit): " DOMAIN
+		DOMAIN=${DOMAIN//[[:space:]]/}
+		
+		if [[ -z "$DOMAIN" ]]; then
+			DIR="/var/www/default"
+			echo "Use default website directory: $DIR"
+			break
 		else
-			exit 1
+			if _is_valid_domain "$DOMAIN"; then
+				DIR="/var/www/$DOMAIN"
+				echo "Use custom domain directory: $DIR"
+				break
+			else
+				echo "Please input a valid domain name..."
+				continue
+			fi
+		fi
+	done
+
+	if [[ -n "$DIR" && "$DIR" != "/" ]]; then
+		if [[ -f "$DIR" ]]; then
+			rm -f "$DIR"
+		elif [[ -d "$DIR" ]]; then
+			rm -rf "$DIR"
 		fi
 	fi
+
+	mkdir -p "$DIR"
+	echo "$DOMAIN $DIR"
 }
 
 _is_valid_domain() {
 	local domain=$1
+	
 	# check domain length
 	if (( ${#domain} > 255 )); then
 		echo "your domain length is too long"
@@ -31,4 +49,3 @@ _is_valid_domain() {
 		return 1
 	fi
 }
-
