@@ -25,10 +25,10 @@ _is_valid_domain() {
 	# check domain label
 	if echo "$domain" | grep -Pq '^([a-z0-9-]{0,63}\.)*[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.(?=[a-z0-9-]*[a-z])[a-z0-9][a-z0-9-]{0,62}$'; then
 		echo "Validated Successfully"
-		retutn 0
+		return 0
 	else
 		echo "Invalid domain name"
-		retutn 1
+		return 1
 	fi
 }
 
