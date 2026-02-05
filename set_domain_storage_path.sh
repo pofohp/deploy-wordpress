@@ -28,7 +28,7 @@ set_domain_storage_path() {
 	fi
 
 	mkdir -p "$DIR"
-	echo "$DOMAIN $DIR"
+	echo "${DOMAIN:-default}" "$DIR"
 }
 
 _is_valid_domain() {
