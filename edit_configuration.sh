@@ -215,7 +215,8 @@ _generate_wp_salt() {
 	# Available characters:
 	# - Standard symbols commonly used in WordPress salts.
 	# - Explicitly excluded: ' (single quote) and " (double quote) to prevent PHP syntax errors.
-	tr -dc 'A-Za-z0-9!@#$%^&*()-_=+[]{}|;:,.<>?/~`' \
+	# use -- to end option parsing
+	tr -dc -- 'A-Za-z0-9!@#$%^&*()-_=+[]{}|;:,.<>?/~`' \
 		< /dev/urandom | head -c 64
 }
 
