@@ -1,10 +1,128 @@
 edit_configuration() {
+	_edit_nginx_configuration "$1"
 	_mariadb_initial
 	_edit_mariadb_configuration
 	_edit_php_configuration
 	_edit_wp_configuration "$2"  # DB_NAME / USER / PASS
 	_generate_wp_salts
 	_edit_wp_salts "$2"
+}
+
+_edit_nginx_configuration() {
+	local domain="$1"
+
+	# remove nginx default link
+	rm -f /etc/nginx/sites-enabled/default
+
+	if [ "$domain" != "default" ]; then
+		# use custom domain
+		local custom_config="/etc/nginx/sites-available/${domain}.conf"
+		cp ./nginx-config-sample/example.com.conf "$custom_config"
+		cp ./nginx-config-sample/default_server.conf "/etc/nginx/sites-available/"
+
+		sed -i "s/example.com/${domain}/g" "$custom_config"
+		rm -f "/etc/nginx/sites-enabled/${domain}.conf" "/etc/nginx/sites-enabled/default_server.conf"
+		ln -s "$custom_config" "/etc/nginx/sites-enabled"  # Use absolute paths
+		ln -s "/etc/nginx/sites-available/default_server.conf" "/etc/nginx/sites-enabled"
+		
+		_generate_exclude_domain_cert
+	else
+		# use ip rather than custom domain
+		local ip_config="/etc/nginx/sites-available/default_server.conf"
+		cp ./nginx-config-sample/example.com.conf "$ip_config"
+
+		sed -i -r \
+			-e 's/^\s*listen 80;.*$/listen 80 default_server;/' \
+			-e 's/^\s*listen \[::\]:80;.*$/listen [::]:80 default_server;/' \
+			-e 's/^\s*listen 443 ssl;.*$/listen 443 ssl default_server;/' \
+			-e 's/^\s*listen \[::\]:443 ssl;.*$/listen [::]:443 ssl default_server;/' \
+			-e 's/^\s*server_name example.com;.*$/server_name _;/' \
+			-e 's/example.com/default/g' \
+			"$ip_config"
+		rm -f "/etc/nginx/sites-enabled/default_server.conf"
+		ln -s "$ip_config" "/etc/nginx/sites-enabled"
+	fi
+	
+	_generate_custom_domain_cert "$domain"
+	cp ./scripts/update_cf_real_ip /etc/cron.daily
+	# chmod +x /etc/cron.daily/update_cf_real_ip
+	cp ./nginx-config-sample/cloudflare_real_ip.conf /etc/nginx/snippets
+}
+
+_generate_exclude_domain_cert() {
+	# This does not generate any outbound traffic or leak privacy.
+	# It is a local Linux kernel route lookup used to determine
+	# the source IP that would be selected for outbound connections.
+	local LOCAL_IP=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7}')
+	
+	# This relies on an external third-party service and requires outbound access.
+	# Avoid using external APIs in scripts when privacy or auditability is a concern.
+	# curl -4 ifconfig.me # Public IP (not recommended)
+	
+	cat > /etc/ssl/http.ext <<EOF
+	authorityKeyIdentifier=keyid,issuer
+	basicConstraints=CA:FALSE
+	keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+	extendedKeyUsage = serverAuth, clientAuth
+	subjectAltName = @alt_names
+	
+	[alt_names]
+	DNS.1 = localhost
+	IP.1 = 127.0.0.1
+	IP.2 = ::1
+	IP.3 = ${LOCAL_IP}
+EOF
+	
+	# Generate a new 2048-bit RSA private key and CSR (Certificate Signing Request)
+	# subj options: Country, State, Location, Organization, Organizational Unit, Common Name(usually as domain but morden browser see dns and ip from http.ext more )
+	openssl req -new -newkey rsa:2048 -sha256 -nodes \
+		-keyout /etc/ssl/private/exclude_domain.key \
+		-out /tmp/exclude_domain.csr \
+		-subj "/C=XX/ST=Local/L=Local/O=Local/OU=IP-ACCESS/CN=IP-ACCESS"
+	
+	openssl x509 -req -days 36500 \
+		-in /tmp/exclude_domain.csr \
+		-signkey /etc/ssl/private/exclude_domain.key \
+		-out /etc/ssl/certs/exclude_domain.crt \
+		-extfile /etc/ssl/http.ext
+	
+	rm -f /tmp/exclude_domain.csr /etc/ssl/http.ext
+}
+
+_generate_custom_domain_cert() {
+	local domain="$1"
+	local LOCAL_IP=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7}')
+	
+	cat > /etc/ssl/http.ext <<EOF
+	authorityKeyIdentifier=keyid,issuer
+	basicConstraints=CA:FALSE
+	keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+	extendedKeyUsage = serverAuth, clientAuth
+	subjectAltName = @alt_names
+	
+	[alt_names]
+	DNS.1 = localhost
+	DNS.2 = ${domain}.com
+	DNS.3 = *.${domain}.com
+	IP.1 = 127.0.0.1
+	IP.2 = ::1
+	IP.3 = ${LOCAL_IP}
+EOF
+	
+	# Generate a new 2048-bit RSA private key and CSR (Certificate Signing Request)
+	# subj options: Country, State, Location, Organization, Organizational Unit, Common Name(usually as domain but morden browser see dns and ip from http.ext more )
+	openssl req -new -newkey rsa:2048 -sha256 -nodes \
+		-keyout /etc/ssl/private/${domain}.key \
+		-out /tmp/${domain}.csr \
+		-subj "/C=XX/ST=Local/L=Local/O=Local/OU=IP-ACCESS/CN=${domain}"
+	
+	openssl x509 -req -days 36500 \
+		-in /tmp/${domain}.csr \
+		-signkey /etc/ssl/private/${domain}.key \
+		-out /etc/ssl/certs/${domain}.crt \
+		-extfile /etc/ssl/http.ext
+	
+	rm -f /tmp/${domain}.csr /etc/ssl/http.ext
 }
 
 _mariadb_initial() {
