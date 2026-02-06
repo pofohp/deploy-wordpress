@@ -203,9 +203,9 @@ _edit_wp_configuration() {
 
 	# TABLE_PREFIX, no need \$ in print "" and in regex
 	# In the regex: $ only has special meaning at the end of a pattern (line end),
-	# so we do not need to escape it here to match the literal '$table_prefix'.
+	# so we do not need to escape it here to match the literal '\$table_prefix'.
 	# In the print statement: double-quoted strings do not require escaping '$',
-	# it will be printed literally as '$table_prefix = ...'.
+	# it will be printed literally as '\$table_prefix = ...'.
 	/^[[:space:]]*\$table_prefix[[:space:]]*=/ {
 		print "$table_prefix = '\''" db_prefix "'\'';"
 		t = 1
