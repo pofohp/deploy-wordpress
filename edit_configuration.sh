@@ -248,49 +248,49 @@ _edit_wp_salts() {
 	
 	# AUTH_KEY
 	/^[[:space:]]*define[[:space:]]*\([[:space:]]*'\''AUTH_KEY'\''[[:space:]]*,/ {
-		print "define( '\''AUTH_KEY'\'', '\''" auth_key "'\'' );"
+		printf "define( '\''AUTH_KEY'\'', '\''" auth_key "'\'' );"
 		ak = 1; next
 	}
 	
 	# SECURE_AUTH_KEY
 	/^[[:space:]]*define[[:space:]]*\([[:space:]]*'\''SECURE_AUTH_KEY'\''[[:space:]]*,/ {
-		print "define( '\''SECURE_AUTH_KEY'\'', '\''" secure_auth_key "'\'' );"
+		printf "define( '\''SECURE_AUTH_KEY'\'', '\''" secure_auth_key "'\'' );"
 		sak = 1; next
 	}
 	
 	# LOGGED_IN_KEY
 	/^[[:space:]]*define[[:space:]]*\([[:space:]]*'\''LOGGED_IN_KEY'\''[[:space:]]*,/ {
-		print "define( '\''LOGGED_IN_KEY'\'', '\''" logged_in_key "'\'' );"
+		printf "define( '\''LOGGED_IN_KEY'\'', '\''" logged_in_key "'\'' );"
 		lk = 1; next
 	}
 	
 	# NONCE_KEY
 	/^[[:space:]]*define[[:space:]]*\([[:space:]]*'\''NONCE_KEY'\''[[:space:]]*,/ {
-		print "define( '\''NONCE_KEY'\'', '\''" nonce_key "'\'' );"
+		printf "define( '\''NONCE_KEY'\'', '\''" nonce_key "'\'' );"
 		nk = 1; next
 	}
 	
 	# AUTH_SALT
 	/^[[:space:]]*define[[:space:]]*\([[:space:]]*'\''AUTH_SALT'\''[[:space:]]*,/ {
-		print "define( '\''AUTH_SALT'\'', '\''" auth_salt "'\'' );"
+		printf "define( '\''AUTH_SALT'\'', '\''" auth_salt "'\'' );"
 		as = 1; next
 	}
 	
 	# SECURE_AUTH_SALT
 	/^[[:space:]]*define[[:space:]]*\([[:space:]]*'\''SECURE_AUTH_SALT'\''[[:space:]]*,/ {
-		print "define( '\''SECURE_AUTH_SALT'\'', '\''" secure_auth_salt "'\'' );"
+		printf "define( '\''SECURE_AUTH_SALT'\'', '\''" secure_auth_salt "'\'' );"
 		sas = 1; next
 	}
 	
 	# LOGGED_IN_SALT
 	/^[[:space:]]*define[[:space:]]*\([[:space:]]*'\''LOGGED_IN_SALT'\''[[:space:]]*,/ {
-		print "define( '\''LOGGED_IN_SALT'\'', '\''" logged_in_salt "'\'' );"
+		printf "define( '\''LOGGED_IN_SALT'\'', '\''" logged_in_salt "'\'' );"
 		ls = 1; next
 	}
 	
 	# NONCE_SALT
 	/^[[:space:]]*define[[:space:]]*\([[:space:]]*'\''NONCE_SALT'\''[[:space:]]*,/ {
-		print "define( '\''NONCE_SALT'\'', '\''" nonce_salt "'\'' );"
+		printf "define( '\''NONCE_SALT'\'', '\''" nonce_salt "'\'' );"
 		ns = 1; next
 	}
 
