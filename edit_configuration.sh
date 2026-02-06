@@ -46,7 +46,7 @@ _edit_mariadb_configuration() {
 		GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';
 		ALTER USER '${DB_USER}'@'localhost' PASSWORD EXPIRE NEVER;
 		FLUSH PRIVILEGES;
-		SELECT User, Host, Db, Select_priv, Insert_priv FROM mysql.db;  # debug
+		# SELECT User, Host, Db, Select_priv, Insert_priv FROM mysql.db;  # debug
 		"
 }
 
