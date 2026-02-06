@@ -215,8 +215,11 @@ _generate_wp_salt() {
 	# Available characters:
 	# - Standard symbols commonly used in WordPress salts.
 	# - Explicitly excluded: ' (single quote) and " (double quote) to prevent PHP syntax errors.
-	# use -- to end option parsing
-	tr -dc -- 'A-Za-z0-9!@#$%^&*()-_=+[]{}|;:,.<>?/~`' \
+	# Use '--' to signal the end of options. This ensures that the leading '-'
+	# inside the string isn't misread as a command-line flag (option) for 'tr'.
+	# The hyphen '-' is placed at the start of the set so 'tr' treats it as a 
+	# literal character instead of a range operator (like A-Z).
+	tr -dc -- '-A-Za-z0-9!@#$%^&*()_=+[]{}|;:,.<>?/~`' \
 		< /dev/urandom | head -c 64
 }
 
