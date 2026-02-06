@@ -5,34 +5,7 @@ for service in apache2 nginx php8.2-fpm mariadb; do
   echo
 done
 
-# Run MariaDB secure installation to set root password and improve security
-sudo mysql_secure_installation
-: <<'END'
-Enter current password for root (enter for none):
-Switch to unix_socket authentication [Y/n] n
-Change the root password? [Y/n] y
-New password: mariadb-password
-Remove anonymous users? [Y/n] y
-Disallow root login remotely? [Y/n] y
-Remove test database and access to it? [Y/n] y
-Reload privilege tables now? [Y/n] y
-END
 
-mysql -u root -p
-# Other ways to log in:
-# sudo mysql -u root -h localhost -p
-# sudo mysql
-# sudo mariadb
-
-# Execute multiple SQL commands in one session
-: <<'END'
-CREATE DATABASE wordpress DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'wpuser'@'localhost' IDENTIFIED BY 'wp-password';
-GRANT ALL PRIVILEGES ON wordpress.* TO 'wpuser'@'localhost';
-FLUSH PRIVILEGES;
-SELECT User, Host, Db, Select_priv, Insert_priv FROM mysql.db;
-EXIT;
-END
 
 # Notes:
 php-fpm       PHP FastCGI Process Manager, used with Nginx
@@ -61,4 +34,3 @@ sudo apt autoremove -y
 sudo rm -rf /etc/apache2
 # Check that Apache is fully removed and Nginx is running
 sudo systemctl status nginx
-
