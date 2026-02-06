@@ -1,5 +1,6 @@
-# /etc/cron.daily/update_cf_real_ip
 #!/bin/bash
+
+# location: /etc/cron.daily/update_cf_real_ip
 
 # filename shouldn't contain extension like .* as it will not run.
 IPV4_URL="https://www.cloudflare.com/ips-v4"
