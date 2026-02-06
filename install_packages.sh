@@ -1,7 +1,8 @@
 install_packages() {
 	source ./ensure_bin.sh
 
-	ensure_bin nginx mariadb-server php-fpm
+	ensure_bin nginx mariadb-server php-fpm php-mysql  # necessary
+	ensure_bin php-curl php-xml php-imagick php-mbstring php-zip php-gd php-intl # suggest
 	# nginx, mariadb-server, php-fpm auto-start and enable on boot by default
 	# sudo systemctl enable service
 	# sudo systemctl start service
@@ -9,7 +10,7 @@ install_packages() {
 	# php php-mysqli
 	# https://make.wordpress.org/hosting/handbook/server-environment/#required-extensions
 
-	# sudo apt install php-fpm php php-mysql php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl \
+	# sudo apt install php-fpm php  php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl \
 # php-zip php-bz2 php-cli php-cgi php-imagick -y
 	
 	echo "nginx, mariadb-server, php-fpm installed successfully."
