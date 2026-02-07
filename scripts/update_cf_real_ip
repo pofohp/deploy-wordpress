@@ -27,7 +27,7 @@ log_with_comment() {
 	echo "# Generated on $(date)"
 
     # Download and process IPv4 addresses
-	if ! curl -fsS "$IPV4_URL" | {
+	if ! wget -qO- "$IPV4_URL" | {
 		if ! read -r first_ip; then
 			log_with_comment "Failed to download IPv4 addresses at $(date)"
 			exit 1
@@ -42,7 +42,7 @@ log_with_comment() {
 	fi
 
 	# Download and process IPv6 addresses
-	if ! curl -fsS "$IPV6_URL" | {
+	if ! wget -qO- "$IPV6_URL" | {
 		if ! read -r first_ip; then
 			log_with_comment "Failed to download IPv6 addresses at $(date)"
 			exit 1
