@@ -6,6 +6,7 @@ edit_configuration() {
 	_edit_wp_configuration "$2"  # DB_NAME / USER / PASS
 	_generate_wp_salts
 	_edit_wp_salts "$2"
+	_secure_wordpress_permissions "$2"
 }
 
 _edit_nginx_configuration() {
@@ -446,4 +447,14 @@ _edit_wp_salts() {
 		rm -f "$web_wp_config.tmp"
 		exit 1
 	}
+}
+
+_secure_wordpress_permissions() {
+	local web_dir="$1"
+	chown -R www-data:www-data "$web_dir"
+	find "$web_dir" -type d -exec chmod 750 {} \;
+	find "$web_dir" -type f -exec chmod 640 {} \;
+	# Special protection for wp-config.php to prevent writing; 
+	# listed separately to remind operators to handle it carefully
+	chmod 640 "${web_dir}/wp-config.php"
 }
