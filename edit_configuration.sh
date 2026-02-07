@@ -136,7 +136,15 @@ EOF
 	openssl req -new -newkey rsa:2048 -sha256 -nodes \
 		-keyout /etc/ssl/private/${domain}.key \
 		-out /tmp/${domain}.csr \
-		-subj "/C=Self-Signed/ST=Self-Signed/L=Self-Signed/O=Self-Signed/OU=DOMAIN-ACCESS/CN=${domain}"
+		-subj "/C=XX/ST=Self-Signed/L=Self-Signed/O=Self-Signed/OU=DOMAIN-ACCESS/CN=${domain}"
+	
+	# Note about the X.509 subject "C" (Country) field:
+	# - The "C" attribute MUST be exactly two characters long (ISO 3166-1 alpha-2 format).
+	# - OpenSSL enforces the length but does NOT validate whether the country code is real.
+	# - "XX" is a reserved pseudo–country code and is commonly used for testing or self-signed certificates.
+	# - For self-signed certificates, use "C=XX" unless a real country is explicitly required.
+	# - Using arbitrary values (even if two characters) may cause issues with some tools,
+	#   internal CAs, compliance scanners, or browser-related validation and audit systems.
 	
 	openssl x509 -req -days 36500 \
 		-in /tmp/${domain}.csr \
