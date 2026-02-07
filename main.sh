@@ -4,6 +4,15 @@ set -euo pipefail
 trap 'rm -rf /tmp/website-deploy' EXIT
 trap 'echo "operation is interrupted"; exit 130' INT
 
+if [[ ! "${1-}" =~ ^([Yy][Ee][Ss]|[Yy])$ ]]; then
+	echo "Warning: Continuing will delete existing website files and databases on the system."
+	read -p "Do you want to proceed? [y/N]: " confirm
+	if [[ ! "$confirm" =~ ^([Yy][Ee][Ss]|[Yy])$ ]]; then
+		echo "Operation cancelled."
+		exit 1
+	fi
+fi
+
 source ./set_domain_storage_path.sh
 read DOMAIN DIR < <(set_domain_storage_path)
 
