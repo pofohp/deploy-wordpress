@@ -1,13 +1,3 @@
-# Make the script executable; without +x permission, run-parts cannot execute it
-chmod +x /etc/cron.daily/update_cf_real_ip
-# Test which scripts in /etc/cron.daily would be executed, without actually running them
-# run-parts --test /etc/cron.daily  # debug
-# Execute all scripts in /etc/cron.daily and print a report of each executed script
-# run-parts --report /etc/cron.daily  # debug
-# Actually execute all scripts in /etc/cron.daily (without test or report)
-run-parts /etc/cron.daily
-
-
 # Uncomment 'server_tokens off;' inside http block to hide Nginx version
 sudo nano /etc/nginx/nginx.conf
 
@@ -196,6 +186,7 @@ $schema = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' 
 $host = $_SERVER['HTTP_HOST'];
 define('WP_HOME', $schema . $host);
 define('WP_SITEURL', $schema . $host);
+
 
 
 
