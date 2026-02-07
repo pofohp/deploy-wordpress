@@ -60,6 +60,14 @@ _edit_nginx_configuration() {
 	# Run all scripts in /etc/cron.daily; if the script fails, fallback to using
 	# a pre-generated Cloudflare real IP Nginx snippet
 	run-parts /etc/cron.daily || cp ./nginx-config-sample/cloudflare_real_ip.conf /etc/nginx/snippets
+
+	# Hide nginx version
+	# Use double quotes instead of single quotes; using single quotes with a backslash-newline
+	# inside the pattern/replacement would introduce extra blank lines on each execution
+	sed -i -E \
+		"s/^[[:space:]]*#?[[:space:]]*server_tokens.*$/\
+\tserver_tokens off; # Recommended practice is to turn this off/" \
+		"/etc/nginx/nginx.conf"
 }
 
 _generate_exclude_domain_cert() {
