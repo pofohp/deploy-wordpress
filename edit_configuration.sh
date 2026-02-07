@@ -100,7 +100,7 @@ EOF
 	openssl req -new -newkey rsa:2048 -sha256 -nodes \
 		-keyout /etc/ssl/private/exclude_domain.key \
 		-out /tmp/exclude_domain.csr \
-		-subj "/C=XX/ST=Local/L=Local/O=Local/OU=IP-ACCESS/CN=IP-ACCESS" &>/dev/null
+		-subj "/C=XX/ST=Local/L=Local/O=Local/OU=IP-ACCESS/CN=${LOCAL_IP}" &>/dev/null
 	
 	openssl x509 -req -days 36500 \
 		-in /tmp/exclude_domain.csr \
