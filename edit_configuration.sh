@@ -7,6 +7,7 @@ edit_configuration() {
 	_generate_wp_salts
 	_edit_wp_salts "$2"
 	_secure_wordpress_permissions "$2"
+	_check_web_services
 }
 
 _edit_nginx_configuration() {
@@ -477,4 +478,43 @@ _secure_wordpress_permissions() {
 	# Special protection for wp-config.php to prevent writing; 
 	# listed separately to remind operators to handle it carefully
 	chmod 640 "${web_dir}/wp-config.php"
+}
+
+_check_web_services() {
+	##
+	# Check and display the status of common web services
+	##
+	
+	# Restart MariaDB if not running (reload not supported)
+	if ! systemctl status mariadb --no-pager >/dev/null; then
+		echo "[ERROR] MariaDB is not running. Restarting..."
+		systemctl restart mariadb || { echo "[FATAL] Failed to restart MariaDB"; exit 1; }
+	fi
+	
+	# Notes: using 'systemctl reload <service>' applies configuration changes gracefully
+	# without interrupting active connections, unlike 'systemctl restart <service>'.
+	
+	# On systems with multiple PHP versions, you must specify the 
+	# versioned PHP-FPM service name when restarting.
+	# The /etc/php/${php_ver}/fpm/php.ini limits file upload size; 
+	# changes require this reload to take effect.
+	
+	# PHP-FPM version detection
+	local php_ver=$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')
+	
+	# Check PHP-FPM configuration and reload
+	if ! php-fpm${php_ver} -t >/dev/null; then
+		echo "[FATAL] PHP-FPM configuration test failed for php${php_ver}-fpm"
+		exit 1
+	else
+		systemctl reload php${php_ver}-fpm || systemctl restart php${php_ver}-fpm || { echo "[FATAL] Failed to reload php${php_ver}-fpm"; exit 1; }
+	fi
+	
+	# Check Nginx configuration and reload
+	if ! nginx -t >/dev/null; then
+		echo "[FATAL] Nginx configuration test failed"
+		exit 1
+	else
+		systemctl reload nginx || systemctl restart nginx || { echo "[FATAL] Failed to reload Nginx"; exit 1; }
+	fi
 }
