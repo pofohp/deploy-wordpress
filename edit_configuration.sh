@@ -29,7 +29,8 @@ _edit_nginx_configuration() {
 		rm -f "/etc/nginx/sites-enabled/${domain}.conf" "/etc/nginx/sites-enabled/default_server.conf"
 		ln -s "$custom_config" "/etc/nginx/sites-enabled"  # Use absolute paths
 		ln -s "/etc/nginx/sites-available/default_server.conf" "/etc/nginx/sites-enabled"
-		
+
+		_generate_custom_domain_cert "$domain"
 		_generate_exclude_domain_cert
 	else
 		# use ip rather than custom domain
@@ -47,8 +48,6 @@ _edit_nginx_configuration() {
 		rm -f "/etc/nginx/sites-enabled/default_server.conf"
 		ln -s "$ip_config" "/etc/nginx/sites-enabled"
 	fi
-	
-	_generate_custom_domain_cert "$domain"
 
 	cp ./scripts/update_cf_real_ip /etc/cron.daily
 	# Make the script executable; without +x permission, run-parts cannot execute it
