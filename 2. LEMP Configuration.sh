@@ -6,9 +6,6 @@ sudo systemctl reload nginx
 # On systems with multiple PHP versions (e.g., 7.4, 8.1, 8.2), you must specify the versioned PHP-FPM service name (e.g., php8.2-fpm) when restarting
 sudo systemctl restart php8.2-fpm
 
-sudo chown -R www-data:www-data /var/www/wordpress/
-# sudo chmod -R 755 /var/www/wordpress/
-
 # Add the following line to the end of C:\Windows\System32\drivers\etc\hosts
 # Keep a blank line at the end
 192.168.242.129 domain.com
@@ -186,6 +183,7 @@ $schema = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' 
 $host = $_SERVER['HTTP_HOST'];
 define('WP_HOME', $schema . $host);
 define('WP_SITEURL', $schema . $host);
+
 
 
 
