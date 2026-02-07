@@ -11,3 +11,5 @@ bash <(wget -qO- https://raw.githubusercontent.com/driverdrift/website-deploy/ma
 When using a self-signed certificate, this video file can be downloaded only if the page embedding it has already been opened in the browser.  
 Directly downloading the video URL without first loading the webpage may result in a "Network Error" due to TLS trust and browser security checks.  
 This is expected behavior with self-signed certificates and not a server-side issue.
+
+For production environments, it is strongly recommended to replace this with a certificate issued by a trusted CA (e.g., Let's Encrypt).
