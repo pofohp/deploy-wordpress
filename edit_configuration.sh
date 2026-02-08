@@ -12,6 +12,16 @@ edit_configuration() {
 	_check_web_services
 }
 
+	# real_ip=$(_detect_public_ip)
+	# Use $(...) for Command Substitution: Executes the function and assigns its output to the variable.
+	# If written as real_ip=_detect_public_ip, it is treated as a literal string assignment.
+	# Other mistake example: demo(){ echo "$v"; }
+	# Running "v=1 demo" follows the logic of "Temporary Environment Variable":
+	# 1. Shell detects the "VAR=VALUE COMMAND" pattern at the start of the line.
+	# 2. It recognizes this as setting an environment variable for that single command only.
+	# 3. Inside this sub-environment (child process context), "v" is set to "1".
+	# 4. Once the command finishes, the variable "v" does not persist in the current Shell.
+
 _detect_public_ip(){
 	# Get the local outbound IP address
 	local test_ip=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7}')
