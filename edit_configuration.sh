@@ -1,5 +1,6 @@
 edit_configuration() {
 	_edit_nginx_configuration "$1"
+	_wp_init_protect
 	_mariadb_initial
 	_edit_mariadb_configuration
 	_edit_php_configuration
@@ -187,6 +188,59 @@ EOF
 		-extfile /etc/ssl/http.ext &>/dev/null
 	
 	rm -f /tmp/${domain}.csr /etc/ssl/http.ext
+}
+
+_wp_init_protect() {
+	source ./ensure_bin.sh
+	ensure_bin apache2-utils
+	
+	mkdir -p "/etc/nginx/auth"
+	AUTH_FILE="/etc/nginx/auth/wp_init.pass"
+	
+	# First, generate a random user inside the script. Later, notify the user to log in by resetting the password.
+	# Of course, even if this file does not exist or is empty, `nginx -t` will still work normally.
+	# However, in that case, the `sign in to access this site` prompt will only appear once in the browser.
+	# When the user later sets a password, they will still need to clear the browser cache in some cases.
+	# By setting a random user, the `sign in to access this site` popup is guaranteed to always appear.
+	
+	
+	# optition -c means create new file; do not use -c when adding a new user
+	# htpasswd -c /etc/nginx/auth/wp_init.pass admin
+	# htpasswd /etc/nginx/auth/wp_init.pass user2  # add new user
+	
+	# Base64 only contains A-Z a-z 0-9 + / = but does not include `.`
+	# SALT=$(openssl rand -base64 6 | tr -dc "$CHARS" | head -c 8)
+	# Insert a newline after every 64 output characters; the command below produces clean output without newlines.
+	# Of course, the -dc option above already removes newline characters.
+	# openssl rand -base64 600 | tr -d '\n\r'
+	# Therefore, directly read from the system random pool.
+	_rand() {
+		tr -dc 'A-Za-z0-9/.' < /dev/urandom | head -c "$1"
+	}
+	local USER=$(_rand 16)
+	local SALT=$(_rand 8)
+	local HASH=$(_rand 22)
+
+	echo "${USER}:\$apr1\$${SALT}\$${HASH}" \
+		> "$AUTH_FILE"
+
+	chown root:www-data "$AUTH_FILE"  # otherwise a 500 Internal Server Error occurs; 
+	# check /var/log/nginx/your_custom_domain.error.log for the reason.
+	chmod 640 "$AUTH_FILE"
+	
+	# If an escape character is followed by a space, it will be treated as escaping the space,
+	# causing a command error instead of acting as a line continuation.
+	echo -e "auth_basic \"WordPress Init Protect\";\nauth_basic_user_file /etc/nginx/auth/wp_init.pass;" \
+		> "/etc/nginx/conf.d/should_delete_after_wordpress_initialization.conf"
+	# As long as this is written, authentication is enabled.
+	# If it is not written, or if `auth_basic off;` is used, authentication is disabled, allowing fine-grained control.
+	# http {} (global, affects all sites)
+	# server {} affects only this one site
+	# location {} (fine-grained control, suitable for a specific file: when the 
+	# site is already live and you only want to protect the admin / initialization).
+	# Advanced: define globally and disable locally (very practical).
+	# This way, all sites are protected by default.
+	# Specific sites can be whitelisted, because auth_basic is inherited.
 }
 
 _mariadb_initial() {
