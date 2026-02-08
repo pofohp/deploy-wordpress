@@ -252,14 +252,14 @@ _wp_init_protect() {
 	# You can view the exact rule order (and their numbers) using: `ufw status numbered` 
 	#
 	# Cons:
-	#   - Requires knowing your public IP
-	#   - Easy to lock yourself out if misconfigured
+	#	- Requires knowing your public IP
+	#	- Easy to lock yourself out if misconfigured
 	#
 	# Example (DO NOT RUN blindly):
-	#   ufw allow from YOUR.IP.ADDR to any port 80 proto tcp
-	#   ufw allow from YOUR.IP.ADDR to any port 443 proto tcp
-	#   ufw deny in to any port 80
-	#   ufw deny in to any port 443
+	#	ufw allow from YOUR.IP.ADDR to any port 80 proto tcp
+	#	ufw allow from YOUR.IP.ADDR to any port 443 proto tcp
+	#	ufw deny in to any port 80
+	#	ufw deny in to any port 443
 	#
 	# ==========================================================================
 	# ==========================================================================
