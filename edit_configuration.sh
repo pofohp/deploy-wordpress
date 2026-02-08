@@ -60,12 +60,12 @@ _detect_public_ip(){
 	echo "$token" > "/var/www/html/.${token}.txt"
 	
 	# Handle UFW firewall (if installed and active)
-	local ufw_rule_added=0
+	UFW_RULE_ADDED=0
 	if command -v ufw &>/dev/null; then
 		if ufw status | grep -q "Status: active"; then
 			ufw allow "${TMP_PORT}/tcp" &>/dev/null
 			ufw reload &>/dev/null
-			ufw_rule_added=1
+			UFW_RULE_ADDED=1
 		fi
 	fi
 	
