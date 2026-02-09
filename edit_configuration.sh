@@ -146,6 +146,28 @@ _detect_public_ip(){
 	else
 		echo "$test_ip"
 	fi
+	
+	# Some cloud providers may assign you a public IP that is still in a private network range (e.g., AWS internal IP),
+	# so this method can give false positives:
+	# local test_ip=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7}')
+	
+	# Try testing access to a public IP on a specific port yourself:
+	# Why use bash below instead of just writing the command directly?
+	# /dev/tcp/host/port is a built-in feature of bash, and it only works when bash parses the command.
+	# Therefore, we start a new bash process to execute the command string.
+	# if timeout 3 bash -c "echo > /dev/tcp/$PUBLIC_IP/$PORT" &>/dev/null; then
+	#	echo "Public IP $PUBLIC_IP is reachable on port $PORT"
+	#else
+	#	echo "No direct public IP or blocked by firewall/NAT"
+	#fi
+	
+	# You can also manually run this in the terminal:
+	# echo > /dev/tcp/1.1.1.1/80
+	# echo $? can be used to check the exit status of the previous command.
+	# But there is a drawback: if the Linux running the script is inside a Windows VM,
+	# and Windows is using a TUN mode VPN that redirects all global traffic,
+	# and the corresponding port on the VPN server VPS also has a service running,
+	# the connection can be established, but the IP obtained is not the Linux VM's IP.
 }
 
 cleanup() {
