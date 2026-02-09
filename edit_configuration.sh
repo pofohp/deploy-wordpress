@@ -57,7 +57,8 @@ _detect_public_ip(){
 	
 	# Create a random token file for verification
 	local token=$(openssl rand -hex 32)
-	echo "$token" > "/var/www/html/.${token}.txt"
+	TMP_FILE=$"/var/www/html/.${token}.txt"
+	echo "$token" > "${TMP_FILE}"
 	
 	# Handle UFW firewall (if installed and active)
 	UFW_RULE_ADDED=0
@@ -114,6 +115,43 @@ _detect_public_ip(){
 	else
 		echo "$test_ip"
 	fi
+}
+
+cleanup() {
+	# local tmp_file=/var/www/html/.*.token
+	# Do not add quotes here to allow wildcard deletion. The wildcard deletion is limited 
+	# to hidden files starting with '.' and uses a rare suffix to avoid accidental deletion.
+	# It is still recommended to rely on parameter passing for precise deletion.
+	# rm -f ${tmp_file}
+	
+	# Delete the token file
+	[[ -n "${TMP_FILE:-}" && -f "${TMP_FILE:-}" ]] && rm -f "${TMP_FILE}"
+	# -n: string length is not zero
+	# -f: checks whether it is a regular file; returns false if the file does not exist or is a directory
+	# ${VAR:-}: this expansion avoids errors when the variable is unset
+	#   - undefined → expands to an empty string
+	#   - defined   → expands to its value
+	# Fully compatible with `set -u`
+	
+	# Alternatively, you can use the method below for checking
+	# Syntax 2: first check whether the variable is defined
+	# [[ -v VAR ]] can be used to test whether TMP_FILE is defined
+	
+	rm -f "/etc/nginx/conf.d/test_ip.conf"
+	
+	# Delete any possibly existing UFW rules that were added during script execution
+	# specifically for public IP detection, not all UFW rules.
+	# Use parameter expansion here to prevent errors if the variable has not been defined yet.
+	# Alternatively, you can use the syntax shown below.
+	# if [[ -v UFW_RULE_ADDED && "$UFW_RULE_ADDED" -eq 1 ]]; then
+	if [[ "${UFW_RULE_ADDED:-0}" -eq 1 ]]; then
+		ufw delete allow "${TMP_PORT}/tcp" &>/dev/null || true
+		ufw reload &>/dev/null || true
+	fi
+
+	nginx -t &>/dev/null && systemctl reload nginx &>/dev/null || true
+	echo "It's a test whether deleting the work directory causes the script to stop running the next code"
+	# If the content contains single quotes, either escape them or enclose the string in double quotes.
 }
 
 _edit_nginx_configuration() {
