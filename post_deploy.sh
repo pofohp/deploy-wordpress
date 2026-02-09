@@ -10,7 +10,7 @@ _remind_dns_resolution() {
 	# echo "$(printf '-%.0s' {1..80})"
 	# In some Bash or BusyBox environments, a format starting with '-' in printf may be misinterpreted as an option.
 	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
-	echo "Copy the following command to add a DNS record at the bottom of the hosts file:"
+	echo "Copy the following command and press Enter to add a DNS record at the bottom of the hosts file:"
 	echo
 	# Output a PowerShell command to add DNS, so the user can copy it
 	cat <<EOF
@@ -25,7 +25,6 @@ Start-Process powershell -Verb RunAs -ArgumentList @(
 )
 
 EOF
-	echo
 	echo "$(printf '=%.0s' {1..80})"
 	# For debugging, end with this below. Do not put a semicolon at the last command.
 	# ipconfig /flushdns;
