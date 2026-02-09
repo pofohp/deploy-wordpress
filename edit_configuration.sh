@@ -37,9 +37,37 @@ _detect_public_ip(){
 			return 0
 			;;
 	esac
+
+	_get_public_ip() {
+		local apis=(
+		  # Amazon AWS
+		  "https://checkip.amazonaws.com"
+		  # https://www.cloudflare.com/cdn-cgi/trace | grep '^ip=' | cut -d= -f2
+		  # https://www.cloudflare.com/cdn-cgi/trace | awk -F= '/^ip=/ {print $2}'
+		  # In Bash, an array can only store URLs or plain strings; it cannot directly store commands with pipes.
+		  "cloudflare"
+		  "https://ifconfig.me"
+		  "https://ifconfig.co"
+		  "https://api.ipify.org"
+		  "https://ipinfo.io/ip"
+		)
+		
+		for api in "${apis[@]}"; do
+			 if [[ "$api" == "cloudflare" ]]; then
+				local public_ip=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace | awk -F= '/^ip=/ {print $2}')
+			else
+				local public_ip=$(curl -s4 "$api" || true)
+			fi
+		    
+		    if [[ -n "$public_ip" ]]; then
+				echo "$public_ip"
+		        break
+		    fi
+		done
+	}
 	
 	# Fetch the "assumed" public IP via external service
-	local public_ip=$(curl -s4 ifconfig.me || true)
+	local public_ip=$(_get_public_ip || true)
 	[[ -z "$public_ip" ]] && echo "$test_ip" && return 0
 	
 	# Generate an available high-range port
