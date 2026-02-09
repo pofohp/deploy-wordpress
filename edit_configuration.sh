@@ -1,5 +1,10 @@
 edit_configuration() {
-	real_ip=$(_detect_public_ip)
+	# real_ip=$(_detect_public_ip)
+	_detect_public_ip  # then get the global variable `real_ip`
+	# The previous issue was that using `$()` would confine other variables
+	# like UFW_RULE_ADDED to a subshell, making them inaccessible to the
+	# cleanup function. Therefore, we call the function directly.
+	
 	_edit_nginx_configuration "$1"
 	_wp_init_protect
 	_mariadb_initial
@@ -33,7 +38,8 @@ _detect_public_ip(){
 		10.*|192.168.*|172.1[6-9].*|172.2[0-9].*|172.3[0-1].*)
 			;;
 		*)
-			echo "$test_ip"
+			# echo "$test_ip"
+			real_ip="$test_ip"
 			return 0
 			;;
 	esac
@@ -142,9 +148,11 @@ _detect_public_ip(){
 	
 	# Determine the result based on token verification
 	if [[ "$remote_content" == "$token" ]]; then
-		echo "$public_ip"
+		# echo "$public_ip"
+		real_ip="$public_ip"
 	else
-		echo "$test_ip"
+		# echo "$test_ip"
+		real_ip="$test_ip"
 	fi
 	
 	# Some cloud providers may assign you a public IP that is still in a private network range (e.g., AWS internal IP),
