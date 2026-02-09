@@ -50,6 +50,8 @@ _detect_public_ip(){
 		  "https://ifconfig.co"
 		  "https://api.ipify.org"
 		  "https://ipinfo.io/ip"
+		  "https://icanhazip.com"
+		  "https://ident.me"
 		)
 		
 		for api in "${apis[@]}"; do
