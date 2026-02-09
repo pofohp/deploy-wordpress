@@ -44,3 +44,6 @@ source ./edit_configuration.sh
 edit_configuration "$DOMAIN" "$DIR"
 
 echo "Install website successfully."
+
+source ./post_deploy.sh
+post_deploy
