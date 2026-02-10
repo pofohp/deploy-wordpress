@@ -156,7 +156,7 @@ _detect_public_ip(){
 	else
 		# echo "$test_ip"
 		real_ip="$test_ip"
-		HAVE_PUBLIC_IP=false
+		# HAVE_PUBLIC_IP=false  # the default value has set before.
 	fi
 	
 	# Some cloud providers may assign you a public IP that is still in a private network range (e.g., AWS internal IP),
