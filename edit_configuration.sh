@@ -140,7 +140,7 @@ _detect_public_ip(){
 		fi
 		sleep 0.3
 	done
-	
+	# curl: -s:silent; -H:header(when conflict with domain, first see header, then domain in address), -k: allow self-signed cert.
 	# Validate by accessing via Public IP + Host Header
 	local ip_remote_content=$(curl -s \
 		--connect-timeout 5 \
