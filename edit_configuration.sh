@@ -145,7 +145,7 @@ _detect_public_ip(){
 	# leading to local DNS resolution results. DNS over TLS uses port 853 and encrypts the communication, making it harder for a 
 	# man-in-the-middle attack to alter the response.
 	# dig @2606:4700:4700::1111 www.example.com AAAA +tls -6 +short
-	local public_dns_answer_ip=$(dig @1.1.1.1 www.example.com A +tls -4 +short | head -n1)
+	local public_dns_answer_ip=$(dig @1.1.1.1 www.example.com A +tls -4 +short | head -n1 || true)
 	
 	# curl: -s:silent; -H:header(when conflict with domain, first see header, then domain in address), -k: allow self-signed cert.
 	# Validate by accessing via Public IP + Host Header
