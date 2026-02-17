@@ -23,7 +23,6 @@ _remind_local_dns_resolution() {
 	# primary_ip="192.168.1.1"
 	# DOMAIN="www.example.com"
 	
-	echo
 	echo "Reminder: To open PowerShell, press Win + X and select 'Terminal'. All commands mentioned below should be run in PowerShell."
 	# echo "$(printf '-%.0s' {1..80})"
 	# In some Bash or BusyBox environments, a format starting with '-' in printf may be misinterpreted as an option.
@@ -61,14 +60,12 @@ EOF
 	echo
 	echo 'ipconfig /flushdns'
 	echo "$(printf '=%.0s' {1..80})"
-	echo
 }
 
 _remind_publick_dns_resolution() {
 	echo "You can add a dns resolution record accessing https://dash.cloudflare.com/ "
 	echo "$DOMAIN → $primary_ip"
 	echo "$(printf '=%.0s' {1..80})"
-	echo
 }
 
 _remind_import_self-signed_certificate() {
@@ -76,7 +73,6 @@ _remind_import_self-signed_certificate() {
 	echo
 	echo "https://github.com/driverdrift/website-deploy/blob/main/README.md#import-a-self-signed-certificate-when-download-fails"
 	echo "$(printf '=%.0s' {1..80})"
-	echo
 }
 
 _remind_apply_public_certificate() {
@@ -85,7 +81,6 @@ _remind_apply_public_certificate() {
 	echo
 	echo "https://github.com/driverdrift/website-deploy/"
 	echo "$(printf '=%.0s' {1..80})"
-	echo
 }
 
 # When copying the entire code of the function below,
@@ -121,7 +116,6 @@ rm -f "/etc/nginx/conf.d/should_delete_after_wordpress_initialization.conf" && \
 nginx -t &>/dev/null && systemctl reload nginx &>/dev/null || systemctl restart nginx &>/dev/null
 [[ $? -eq 0 ]] && echo "Success: Your website is now visible." || echo -e "Error: Service failed to restart. The reason is: \n$(nginx -t 2>&1)"'
 	echo "$(printf '=%.0s' {1..80})"
-	echo
 	################################################################################
 	# [[ $? ]] && echo ok
 	# This command cannot be used to determine whether the previous command succeeded.
