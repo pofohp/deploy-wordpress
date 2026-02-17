@@ -158,16 +158,25 @@ _detect_public_ip(){
 		"http://${external_ip}:80/.${token}.txt" || true)
 
 	# Condisering cdn.
-	[[ -z $public_dns_answer_ip ]] || local dns_resolved_ip_remote_content=$(curl -s \
-		--connect-timeout 5 \
-		--max-time 7 \
-		-H "Host: ${DOMAIN}" \
-		"http://${public_dns_answer_ip}:80/.${token}.txt?nocache=$(date +%s)" || true)
+	_get_dns_resolved_ip_remote_content() {
+		[[ -z $public_dns_answer_ip ]] || local dns_resolved_ip_remote_content=$(curl -s \
+			--connect-timeout 5 \
+			--max-time 7 \
+			-H "Host: ${DOMAIN}" \
+			"http://${public_dns_answer_ip}:80/.${token}.txt?nocache=$(date +%s)" || true)
+		
+		echo "${dns_resolved_ip_remote_content:-true}"
+	}
 
 	local domain_remote_content=$(curl -s \
 		--connect-timeout 5 \
 		--max-time 7 \
 		"http://${DOMAIN}:80/.${token}.txt" || true)
+
+	if [[ "$domain_remote_content" == "$token" ]]; then
+		HAVE_LOCAL_CONFIGURED_DNS=true
+		HAVE_PUBLIC_IP=true
+	fi
 	
 	# timeout 5 curl -s -H "Host: onlyfortest.com" ...  # alternative timeout method
 	
@@ -180,6 +189,13 @@ _detect_public_ip(){
 		# echo "$test_ip"
 		real_ip="$test_ip"
 		# HAVE_PUBLIC_IP=false  # the default value has set before.
+	fi
+
+	if $HAVE_PUBLIC_IP; then
+		dns_resolved_ip_remote_content=$(_get_dns_resolved_ip_remote_content)
+		if [[ "$dns_resolved_ip_remote_content" == "$token" ]]; then
+			HAVE_PUBLIC_CONFIGURED_DNS=true
+		fi
 	fi
 	
 	# Some cloud providers may assign you a public IP that is still in a private network range (e.g., AWS internal IP),
