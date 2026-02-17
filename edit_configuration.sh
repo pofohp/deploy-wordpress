@@ -95,9 +95,13 @@ _detect_primary_ip(){
 	# Deploy Nginx test configuration by replacing the placeholder port
 	if [ "$domain" = "default" ]; then
 		cp "./nginx-config-sample/default_server_detect_primary_ip.conf" "/etc/nginx/sites-available/default_server.conf"
+		rm -f "/etc/nginx/sites-enabled/default_server.conf"
+		ln -s "/etc/nginx/sites-available/default_server.conf" "/etc/nginx/sites-enabled"
 	else
 		sed -E "s/^[[:space:]]*server_name[[:space:]]+[^;]+[[:space:]]*;[[:space:]]*$/\tserver_name ${DOMAIN};/" \
 			"./nginx-config-sample/example.com_detect_primary_ip.conf" > "/etc/nginx/sites-available/${DOMAIN}.conf"
+		rm -f "/etc/nginx/sites-enabled/${domain}.conf" "/etc/nginx/sites-enabled/default_server.conf"
+		ln -s "/etc/nginx/sites-available/${domain}.conf" "/etc/nginx/sites-enabled"
 	fi
 	
 	# Create a random token file for verification
@@ -170,6 +174,8 @@ _detect_primary_ip(){
 		fi
 	fi
 
+	[ "$domain" = "default" ] && return 0
+	
 	# Using DNS over TLS (DoT) prevents local DNS hijacking. Without TLS, DNS queries are plaintext and can be intercepted, 
 	# leading to local DNS resolution results. DNS over TLS uses port 853 and encrypts the communication, making it harder for a 
 	# man-in-the-middle attack to alter the response.
