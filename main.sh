@@ -44,6 +44,7 @@ source ./edit_configuration.sh
 edit_configuration "$DOMAIN" "$DIR"
 
 echo "Install website successfully."
+echo "$(printf '=%.0s' {1..80})"
 
 source ./post_deploy.sh
 post_deploy
