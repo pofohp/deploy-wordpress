@@ -97,7 +97,7 @@ _detect_primary_ip(){
 		cp "./nginx-config-sample/default_server_detect_primary_ip.conf" "/etc/nginx/sites-available/default_server.conf"
 	else
 		sed -E "s/^[[:space:]]*server_name[[:space:]]+[^;]+[[:space:]]*;[[:space:]]*$/\tserver_name ${DOMAIN};/" \
-			"./nginx-config-sample/test_ip.conf" > "/etc/nginx/sites-available/${DOMAIN}.conf"
+			"./nginx-config-sample/example.com_detect_primary_ip.conf" > "/etc/nginx/sites-available/${DOMAIN}.conf"
 	fi
 	
 	# Create a random token file for verification
