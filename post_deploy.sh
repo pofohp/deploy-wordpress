@@ -85,7 +85,11 @@ _remind_apply_public_certificate() {
 # This may be caused by data format issues, or by mouse malfunction during scrolling.
 # In any case, do not overly trust copy-and-paste.
 _remind_wp_init_protection() {
-	DOMAIN="www.example.com"
+	if [ "$DOMAIN" = "default" ]; then
+		local domain=$primary_ip
+	else
+		local domain=$DOMAIN
+	fi
 	echo
 	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
 
@@ -98,7 +102,7 @@ _remind_wp_init_protection() {
 	echo "$(printf '=%.0s' {1..80})"
 
 	# Instructions after setting credentials
-	echo "2. After setting up password, refresh the website page >>>>>> https://${DOMAIN} <<<<<< on a desktop web browser to continue WordPress installation."
+	echo "2. After setting up password, refresh the website page >>>>>> https://${domain} <<<<<< on a desktop web browser to continue WordPress installation."
 	echo "   Do not use a mobile browser, as it may fail to load the login page."
 	echo
 	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
