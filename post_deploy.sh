@@ -20,7 +20,7 @@ post_deploy() {
 # Alternatively, `true' is another commonly used empty command that always returns success (exit status 0). You can also use it inside the function body.
 
 _remind_local_dns_resolution() {
-	real_ip="192.168.1.1"
+	primary_ip="192.168.1.1"
 	DOMAIN="www.example.com"
 	
 	echo
@@ -32,7 +32,7 @@ _remind_local_dns_resolution() {
 	echo
 	# Output a PowerShell command to add DNS, so the user can copy it
 	cat <<EOF
-\$add_dns = '$real_ip $DOMAIN'
+\$add_dns = '$primary_ip $DOMAIN'
 Start-Process powershell -Verb RunAs -ArgumentList @(
 	"-NoProfile",
 	"-ExecutionPolicy Bypass",
