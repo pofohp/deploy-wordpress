@@ -12,7 +12,7 @@ post_deploy() {
 # `:' is an empty command in Bash that does nothing and always returns success (exit status 0). You can use it as a placeholder inside the function body.
 # Alternatively, `true' is another commonly used empty command that always returns success (exit status 0). You can also use it inside the function body.
 
-_remind_dns_resolution() {
+_remind_local_dns_resolution() {
 	real_ip="192.168.1.1"
 	DOMAIN="www.example.com"
 	
@@ -55,6 +55,21 @@ EOF
 	echo 'ipconfig /flushdns'
 	echo "$(printf '=%.0s' {1..80})"
 	echo
+}
+
+_remind_publick_dns_resolution() {
+	echo "You can add a dns resolution record accessing https://dash.cloudflare.com/ "
+	echo "$DOMAIN → $primary_ip"
+}
+
+_remind_import_self-signed_certificate() {
+	echo "accessing the link below to learn how to import a self-signed certificate when necessary: "
+	echo "https://github.com/driverdrift/website-deploy/blob/main/README.md#import-a-self-signed-certificate-when-download-fails"
+}
+
+_remind_apply_public_certificate() {
+	echo "accessing the link below to learn how to apply a public certificate when in production environment: "
+	echo "https://github.com/driverdrift/website-deploy/"
 }
 
 # When copying the entire code of the function below,
