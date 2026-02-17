@@ -312,9 +312,9 @@ _edit_nginx_configuration() {
 		_generate_ip_access_cert "$domain"
 	fi
 
-	cp ./scripts/update_cf_primary_ip /etc/cron.daily
+	cp ./scripts/update_cf_real_ip /etc/cron.daily
 	# Make the script executable; without +x permission, run-parts cannot execute it
-	chmod +x /etc/cron.daily/update_cf_primary_ip
+	chmod +x /etc/cron.daily/update_cf_real_ip
 	# Test which scripts in /etc/cron.daily would be executed, without actually running them
 	# run-parts --test /etc/cron.daily  # debug
 	# Execute all scripts in /etc/cron.daily and print a report of each executed script
@@ -322,7 +322,7 @@ _edit_nginx_configuration() {
 	# Actually execute all scripts in /etc/cron.daily (without test or report)
 	# Run all scripts in /etc/cron.daily; if the script fails, fallback to using
 	# a pre-generated Cloudflare real IP Nginx snippet
-	run-parts /etc/cron.daily || cp ./nginx-config-sample/cloudflare_primary_ip.conf /etc/nginx/snippets
+	run-parts /etc/cron.daily || cp ./nginx-config-sample/cloudflare_real_ip.conf /etc/nginx/snippets
 
 	# Hide nginx version
 	# Use double quotes instead of single quotes; using single quotes with a backslash-newline
