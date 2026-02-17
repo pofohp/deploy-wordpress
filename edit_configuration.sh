@@ -253,17 +253,17 @@ cleanup() {
 	# Syntax 2: first check whether the variable is defined
 	# [[ -v VAR ]] can be used to test whether TMP_FILE is defined
 	
-	rm -f "/etc/nginx/conf.d/test_ip.conf"
+	# rm -f "/etc/nginx/conf.d/test_ip.conf"
 	
 	# Delete any possibly existing UFW rules that were added during script execution
 	# specifically for public IP detection, not all UFW rules.
 	# Use parameter expansion here to prevent errors if the variable has not been defined yet.
 	# Alternatively, you can use the syntax shown below.
 	# if [[ -v UFW_RULE_ADDED && "$UFW_RULE_ADDED" -eq 1 ]]; then
-	if [[ "${UFW_RULE_ADDED:-0}" -eq 1 ]]; then
-		ufw delete allow "${TMP_PORT}/tcp" &>/dev/null || true
-		ufw reload &>/dev/null || true
-	fi
+	# if [[ "${UFW_RULE_ADDED:-0}" -eq 1 ]]; then
+		# ufw delete allow "${TMP_PORT}/tcp" &>/dev/null || true
+		# ufw reload &>/dev/null || true
+	# fi
 
 	nginx -t &>/dev/null && systemctl reload nginx &>/dev/null || true
 	# echo "It's a test whether deleting the work directory causes the script to stop running the next code"  # debug
