@@ -34,8 +34,8 @@ _detect_primary_ip(){
 	local source_ip=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7}')
 	HAVE_PUBLIC_IP=false
 	local get_external_ip=true
-	HAVE_LOCAL_CONFIGURED_DNS=false
 	HAVE_PUBLIC_CONFIGURED_DNS=false
+	HAVE_LOCAL_CONFIGURED_DNS=false
 	
 	# If the outbound IP is a public address, return it immediately
 	case "$source_ip" in
