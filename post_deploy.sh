@@ -42,7 +42,7 @@ Start-Process powershell -Verb RunAs -ArgumentList @(
 )
 
 EOF
-	echo "$(printf '=%.0s' {1..80})"
+	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
 	# For debugging, end with this below. Do not put a semicolon at the last command.
 	# ipconfig /flushdns;
 	# Read-Host 'Press Enter to exit'"
@@ -50,12 +50,12 @@ EOF
 	echo "However, DNS resolution happens from top to bottom. If an old entry is above the one you just added, your new record might not work, causing issues. If you need to remove or edit the newly added entry, you can copy the following command to manually view and edit the file:"
 	echo
 	echo 'Start-Process notepad.exe -ArgumentList "C:\Windows\System32\drivers\etc\hosts" -Verb RunAs'
-	echo "$(printf '=%.0s' {1..80})"
+	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
 	
 	echo "You can also run the following command to check which DNS the domain currently points to:"
 	echo
 	echo "ping $DOMAIN"
-	echo "$(printf '=%.0s' {1..80})"
+	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
 	
 	echo "Tip: If you added a DNS record in the Cloudflare dashboard, it may take some time to propagate. You can manually change your DNS to 1.1.1.1 or 8.8.8.8, then run the following command to refresh the DNS cache:"
 	echo
@@ -68,10 +68,12 @@ _remind_publick_dns_resolution() {
 	echo "You can add a dns resolution record accessing https://dash.cloudflare.com/ "
 	echo "$DOMAIN → $primary_ip"
 	echo "$(printf '=%.0s' {1..80})"
+	echo
 }
 
 _remind_import_self-signed_certificate() {
 	echo "accessing the link below to learn how to import a self-signed certificate when necessary: "
+	echo
 	echo "https://github.com/driverdrift/website-deploy/blob/main/README.md#import-a-self-signed-certificate-when-download-fails"
 	echo "$(printf '=%.0s' {1..80})"
 	echo
@@ -80,6 +82,7 @@ _remind_import_self-signed_certificate() {
 _remind_apply_public_certificate() {
 	# considering certificate for ip or for domain.
 	echo "accessing the link below to learn how to apply a public certificate when in production environment: "
+	echo
 	echo "https://github.com/driverdrift/website-deploy/"
 	echo "$(printf '=%.0s' {1..80})"
 	echo
