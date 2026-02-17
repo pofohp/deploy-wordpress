@@ -1,6 +1,6 @@
 edit_configuration() {
 	# primary_ip=$(_detect_public_ip)
-	_detect_public_ip  # then get the global variable `primary_ip`
+	_detect_primary_ip  # then get the global variable `primary_ip`
 	# The previous issue was that using `$()` would confine other variables
 	# like UFW_RULE_ADDED to a subshell, making them inaccessible to the
 	# cleanup function. Therefore, we call the function directly.
@@ -27,13 +27,13 @@ edit_configuration() {
 	# 3. Inside this sub-environment (child process context), "v" is set to "1".
 	# 4. Once the command finishes, the variable "v" does not persist in the current Shell.
 
-_detect_public_ip(){
+_detect_primary_ip(){
 	source ./ensure_bin.sh
 	ensure_bin curl
 	# Get the local outbound IP address
 	local source_ip=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7}')
 	HAVE_PUBLIC_IP=false
-	get_public_ip=true
+	local get_external_ip=true
 	HAVE_LOCAL_CONFIGURED_DNS=false
 	HAVE_PUBLIC_CONFIGURED_DNS=false
 	
@@ -48,7 +48,7 @@ _detect_public_ip(){
 			;;
 	esac
 
-	_get_public_ip() {
+	_get_external_ip() {
 		local apis=(
 		  # Amazon AWS
 		  "https://checkip.amazonaws.com"
@@ -66,21 +66,21 @@ _detect_public_ip(){
 		
 		for api in "${apis[@]}"; do
 			 if [[ "$api" == "cloudflare" ]]; then
-				local public_ip=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace | awk -F= '/^ip=/ {print $2}')
+				local external_ip=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace | awk -F= '/^ip=/ {print $2}')
 			else
-				local public_ip=$(curl -s4 "$api" || true)
+				local external_ip=$(curl -s4 "$api" || true)
 			fi
 		    
-		    if [[ -n "$public_ip" ]]; then
-				echo "$public_ip"
+		    if [[ -n "$external_ip" ]]; then
+				echo "$external_ip"
 		        break
 		    fi
 		done
 	}
 	
 	# Fetch the "assumed" public IP via external service
-	$HAVE_PUBLIC_IP || local external_ip=$(_get_public_ip || true)
-	[[ -z "$vps_public_ip" ]] && { primary_ip="$test_ip"; get_public_ip=false; }
+	$HAVE_PUBLIC_IP || local external_ip=$(_get_external_ip || true)
+	[[ -z "$external_ip" ]] && { primary_ip="$source_ip"; get_external_ip=false; }
 	
 	# Generate an available high-range port
 	# while :; do
@@ -181,13 +181,13 @@ _detect_public_ip(){
 	# timeout 5 curl -s -H "Host: onlyfortest.com" ...  # alternative timeout method
 	
 	# Determine the result based on token verification
-	if [[ "$public_ip_remote_content" == "$token" ]]; then
+	if $HAVE_PUBLIC_IP || [[ "$public_ip_remote_content" == "$token" ]]; then
 		# echo "$public_ip"
-		primary_ip="$public_ip"
+		primary_ip="$external_ip"
 		HAVE_PUBLIC_IP=true
 	else
-		# echo "$test_ip"
-		primary_ip="$test_ip"
+		# echo "$source_ip"
+		primary_ip="$source_ip"
 		# HAVE_PUBLIC_IP=false  # the default value has set before.
 	fi
 
