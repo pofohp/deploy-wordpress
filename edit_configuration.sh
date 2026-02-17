@@ -175,7 +175,7 @@ _detect_primary_ip(){
 		fi
 	fi
 
-	[ "$domain" = "default" ] && return 0
+	[ "$DOMAIN" = "default" ] && return 0
 	
 	# Using DNS over TLS (DoT) prevents local DNS hijacking. Without TLS, DNS queries are plaintext and can be intercepted, 
 	# leading to local DNS resolution results. DNS over TLS uses port 853 and encrypts the communication, making it harder for a 
