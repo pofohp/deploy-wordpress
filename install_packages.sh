@@ -10,7 +10,7 @@ install_packages() {
 	# nginx, mariadb-server, php-fpm auto-start and enable on boot by default
 	# sudo systemctl enable service
 	# sudo systemctl start service
-	echo "nginx, mariadb-server, php-fpm and ohter php extensions installed successfully."
+	echo "nginx, mariadb-server, php-fpm and other php extensions installed successfully."
 
 	# Download and extract the latest WordPress into /var/www/$DOMAIN
 	if ! wget -qO- https://wordpress.org/latest.tar.gz | tar -xz -C "$1" --strip-components=1; then
