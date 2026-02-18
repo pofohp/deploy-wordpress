@@ -31,6 +31,7 @@ _remind_local_dns_resolution() {
 	echo "Copy the following command to add a DNS record at the bottom of the hosts file (including the trailing blank line, so you don’t need to press Enter manually):"
 	echo
 	# Output a PowerShell command to add DNS, so the user can copy it
+	# Keep a blank line at the hosts file end.
 	cat <<EOF
 \$add_dns = '$primary_ip $DOMAIN'
 Start-Process powershell -Verb RunAs -ArgumentList @(
@@ -63,7 +64,7 @@ _remind_publick_dns_resolution() {
 	echo "$DOMAIN → $primary_ip"
 	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
 	
-	echo "Tip: If you added a DNS record in the Cloudflare dashboard, it may take some time to propagate. You can manually change your DNS to 1.1.1.1 or 8.8.8.8, then run the following command to refresh the DNS cache:"
+	echo "Tip: If you added a DNS record in the Cloudflare dashboard, it may take some time to propagate. You can manually change your DNS servers to 1.1.1.1 or 8.8.8.8, then run the following command to refresh the DNS cache:"
 	echo
 	echo 'ipconfig /flushdns'
 	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
