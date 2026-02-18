@@ -910,8 +910,15 @@ _check_web_services() {
 }
 
 _update_hosts() {
-	sed -i -E "/[[:space:]]${domain}([[:space:]]|$)/d" /etc/hosts
-	echo -E "${primary_ip}\t${DOMAIN}" | tee -a /etc/hosts > /dev/null
+	sed -i -E "/[[:space:]]${DOMAIN}([[:space:]]|$)/d" /etc/hosts
+	echo -e "${primary_ip}\t${DOMAIN}" | tee -a /etc/hosts > /dev/null
+	# -e enables interpretation of backslash escape sequences.
+	# -E disables interpretation of backslash escape sequences.
+	# In most Linux distributions using Bash, the default behavior is equivalent to -E (no escape processing).
+	# However, behavior may vary across different shells (e.g., sh, zsh).
+	# For better portability and consistent behavior across systems, printf is recommended.
+	# printf is more reliable and supports escape sequences in a predictable manner.
+	# printf "%s\t%s\n" "$primary_ip" "$DOMAIN" | tee -a /etc/hosts > /dev/null
 }
 # This function resolves the following three errors shown in WordPress Tools → Site Health:
 # Error: A scheduled event is late
