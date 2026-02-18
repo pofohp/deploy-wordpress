@@ -142,7 +142,7 @@ nginx -t &>/dev/null && systemctl reload nginx &>/dev/null || systemctl restart 
 [[ $? -eq 0 ]] && echo -e "\nSuccess: Your website is now visible." || echo -e "\nError: Service failed to restart. The reason is: \n$(nginx -t 2>&1)"'
 	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
 
-	echo "4. Admin login URL by default is >>>>>> https://${domain}/wp-login.php" <<<<<< "
+	echo "4. Admin login URL by default is >>>>>> https://${domain}/wp-login.php <<<<<< "
 	echo '   You can use the plugin "WPS Hide Login" to change the default login URL'
 	echo "   Besides, check Site Health under WordPress Tools and try uploading/downloading files."
 	echo "$(printf '=%.0s' {1..80})"
