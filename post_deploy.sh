@@ -27,7 +27,7 @@ _remind_local_dns_resolution() {
 	# echo "$(printf '-%.0s' {1..80})"
 	# In some Bash or BusyBox environments, a format starting with '-' in printf may be misinterpreted as an option.
 	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
-	echo "Copy the following command and press Enter to add a DNS record at the bottom of the hosts file (including the trailing blank line, so you don’t need to press Enter manually):"
+	echo "Copy the following command to add a DNS record at the bottom of the hosts file (including the trailing blank line, so you don’t need to press Enter manually):"
 	echo
 	# Output a PowerShell command to add DNS, so the user can copy it
 	cat <<EOF
