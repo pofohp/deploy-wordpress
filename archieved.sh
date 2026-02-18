@@ -1,14 +1,3 @@
-# Access WordPress at
-domain.com
-# Admin login URL by default
-https://domain.com/wp-login.php
-
-admin@example.com
-
-# Check Site Health under Tools and try uploading/downloading files
-
-# Use the plugin "WPS Hide Login" to change the default login URL
-
 # To allow uploading different file types, add the following to your theme's functions.php
 sudo nano /var/www/wordpress/wp-content/themes/twentytwentyfive/functions.php 还要考虑 php 和 nginx 的默认允许上传大小，超了也会报错，可以先上传一个小文件试试看。zip 和 rar 是默认 可以上传的。
 # php.ini → upload_max_filesize 和 post_max_size ，Nginx，检查 client_max_body_size
@@ -166,6 +155,7 @@ $schema = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' 
 $host = $_SERVER['HTTP_HOST'];
 define('WP_HOME', $schema . $host);
 define('WP_SITEURL', $schema . $host);
+
 
 
 
