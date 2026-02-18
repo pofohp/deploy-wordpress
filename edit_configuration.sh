@@ -202,6 +202,14 @@ _detect_primary_ip(){
 		fi
 	fi
 
+	# Considering that Debian might be running inside a Windows VM, 
+	# and Windows could be routing all traffic through a VPN's TUN mode, 
+	# the primary way to access websites may be via a browser on Windows. 
+	# Therefore, we first need to clear any old Linux hosts entries to 
+	# determine whether we should add entries to the Windows hosts file, 
+	# i.e., check the value of HAVE_LOCAL_CONFIGURED_DNS.
+	sed -i -E "/[[:space:]]${DOMAIN}([[:space:]]|$)/d" /etc/hosts
+	
 	local domain_remote_content=$(curl -s \
 		--connect-timeout 5 \
 		--max-time 7 \
@@ -911,6 +919,7 @@ _check_web_services() {
 
 _update_hosts() {
 	sed -i -E "/[[:space:]]${DOMAIN}([[:space:]]|$)/d" /etc/hosts
+	# sed -i.bak -E "/[[:space:]]${DOMAIN}([[:space:]]|$)/d" /etc/hosts  # debug
 	echo -e "${primary_ip}\t${DOMAIN}" | tee -a /etc/hosts > /dev/null
 	# -e enables interpretation of backslash escape sequences.
 	# -E disables interpretation of backslash escape sequences.
