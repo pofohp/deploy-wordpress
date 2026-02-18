@@ -102,7 +102,7 @@ _remind_apply_public_certificate() {
 	# considering certificate for ip or for domain.
 	echo "accessing the link below to learn how to apply a public certificate when in production environment: "
 	echo
-	echo "https://github.com/driverdrift/website-deploy/"
+	echo "https://github.com/driverdrift/website-deploy/blob/main/README.md#apply-public-certificate"
 	echo "$(printf '=%.0s' {1..80})"
 }
 
