@@ -56,6 +56,22 @@ EOF
 	echo "You can also run the following command to check which DNS the domain currently points to:"
 	echo
 	echo "ping $DOMAIN"
+	echo "$(printf '%s' "$(printf -- '-%.0s' {1..80})")"
+
+	echo 'If you are using a VPN, you can import the following rules in your routing settings to bypass the VPN so that the configuration in C:\Windows\System32\drivers\etc\hosts takes effect.'
+	echo
+	echo "[
+  {
+    \"port\": \"\",
+    \"outboundTag\": \"direct\",
+    \"domain\": [
+      \"domain:example.com\",
+      \"domain:${DOMAIN}\"
+    ],
+    \"enabled\": true,
+    \"remarks\": \"custom_direct\"
+  }
+]"
 	echo "$(printf '=%.0s' {1..80})"
 }
 
